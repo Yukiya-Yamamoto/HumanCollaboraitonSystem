@@ -61,7 +61,7 @@ $ rosrun human_collaboration HumanCollaborationModule.py
 # 仕様書との対応部分について
 人協働マニピュレーションインターフェース仕様書と本システムの対応については，アクティビティ図とステートマシン図をもとに，以下の通りとなっている
 
-![人協働_アクティビティ図](https://github.com/user-attachments/assets/5348932b-6f57-4d07-8e7c-6f42b2967b2c)
+![人協働_アクティビティ図_適応範囲](https://github.com/user-attachments/assets/920571c0-6e84-419c-b3eb-0bf436b5379c)
 
 # パッケージ概要
 各パッケージの機能以下の通りである
