@@ -73,6 +73,8 @@ $ catkin build
 
 https://wwwms.meijo-u.ac.jp/kohara/technicalreport/ros_motoman_gp8_setup
 
+ハードウェア、実行シナリオを変える場合にはユーザ定義ファイルであるHumanCollaborationUserDefineModule.pyを適宜変更する．
+
 ハードウェア, シミュレータを立ち上げた後に実行するコマンドは以下の通りである. 
 ```sh
 $ rosrun human_collaboration HumanCollaborationModule.py
