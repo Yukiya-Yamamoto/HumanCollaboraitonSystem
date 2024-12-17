@@ -85,6 +85,8 @@ $ rosrun human_collaboration HumanCollaborationModule.py
 ![システム間のやりとり](https://github.com/Yukiya-Yamamoto/Human_Collaboration_Manipulation_System/assets/118329378/f7af74ba-4859-4642-815d-e2dd9168e4c4)
 
 本システム構成は以下の通りである
+![システム構成図](https://github.com/user-attachments/assets/c3d306f9-9727-4a5f-95e3-a2e6d1f7ddba)
+
 
 # 仕様書との対応部分について
 本システムはエラー発生を含まない正常系の動作を実装したものになっている．一方，仕様書はエラーなどの異常系についても定義されているため，仕様書と本パッケージの対応関係について示す．
