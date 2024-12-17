@@ -131,10 +131,20 @@ $ rosrun human_collaboration HumanCollaborationModule.py
 
 ※仕様で定義されているオプション機能に関しては未実装
 
-# discharge_position_detect（排出位置検出サブシステム）
+## discharge_position_detect（排出位置検出サブシステム）
+pickしたワークをplaceする場所を検出するサブシステム．
 
+※オプション機能となっているため、現在は通信のみの実装となっている
 
+## ws_recogneze (WS内環境認識サブシステム)
+障害物の状態が作業中に変化した場合に、その変化を検出するシステム
 
+※オプション機能となっているため、現在は未実装
+
+## peripheral_environment_detection　(周辺環境認識サブシステム)
+ロボットの周辺環境に想定外のモノや人が侵入したことを検出するシステム
+
+※オプション機能となっているため、現在は未実装
 ## 貢献者
 Yukiya Yamamoto ([Yukiya-Yamamoto](https://github.com/Yukiya-Yamamoto))
 
