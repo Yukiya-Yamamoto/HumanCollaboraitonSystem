@@ -46,7 +46,8 @@ $ catkin build
 
 ## 本システムの動作確認
 ハードウェアのインストールや設定は，各自環境構築を行う．
-システムの検証として用いたMOTOMAN-GP8は以下を参照して環境構築した
+
+システムの検証として用いたMOTOMAN-GP8は以下を参照して環境構築した．
 https://wwwms.meijo-u.ac.jp/kohara/technicalreport/ros_motoman_gp8_setup
 
 ハードウェア, シミュレータを立ち上げた後に実行するコマンドは以下の通りである. 
