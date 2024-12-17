@@ -227,7 +227,7 @@ class NON_OPERATING_WORK(HumanCollaborationState):
         return None
 
 ###########################################
-#待機中処理クラス.                        #
+#一時停止中処理クラス.                     #
 ###########################################
 class PAUSED_WORK(HumanCollaborationState):
     def __init__(self, label, taskfin:TaskFinalServer, tran:Transition, outcomes):
@@ -246,11 +246,11 @@ class PAUSED_WORK(HumanCollaborationState):
         if self.preempt('State Prepar is being preempted!!!'):
             return 'preempted'
         
-        #待機処理.
+        #一時停止処理.
         return self.paused()
 
     def paused(self):
-        ###ロボットごとの待機動作.
+        ###ロボットごとの一時停止動作.
         #ここから.
 
         #ここまで.
