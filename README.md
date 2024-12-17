@@ -71,6 +71,25 @@ $ rosrun human_collaboration HumanCollaborationModule.py
 
 # パッケージ概要
 各パッケージの機能以下の通りである
+.
+├── MOTOMAN #motoman-g8での検証コード
+│   ├── discharge_position_detect　#排出位置検出サブシステム
+│   ├── human_collaboration #人協働マニピュレーションモジュール
+│   │   └── scripts
+│   │       └── HumanCollaborationUserDefineModule.py #ユーザ定義ファイル　ロボット依存の情報など
+│   ├── peripheral_environment_detection　#周辺環境認識サブシステム
+│   ├── system_management　#上位アプリ
+│   ├── work_detection　#ワーク検出サブシステム
+│   └── ws_recogneze #WS内環境認識サブシステム
+└── Skelton #実機の情報がないスケルトンコード
+    ├── discharge_position_detect　#排出位置検出サブシステム
+    ├── human_collaboration #人協働マニピュレーションモジュール
+    │   └── scripts
+    │       └── HumanCollaborationUserDefineModule.py #ユーザ定義ファイル　ロボット依存の情報など
+    ├── peripheral_environment_detection　#周辺環境認識サブシステム
+    ├── system_management　#上位アプリ
+    ├── work_detection　#ワーク検出サブシステム
+    └── ws_recogneze #WS内環境認識サブシステム
 
 ## 貢献者
 Yukiya Yamamoto ([Yukiya-Yamamoto](https://github.com/Yukiya-Yamamoto))
