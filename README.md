@@ -91,7 +91,7 @@ $ rosrun human_collaboration HumanCollaborationModule.py
 仕様書と本パッケージの対応関係は，以下のアクティビティ図とステートマシン図のうち、赤枠で囲われた部分になっている．
 
 ![人協働_アクティビティ図_適応範囲](https://github.com/user-attachments/assets/af25dda5-7102-46a4-9695-d40cc98d0c3a)
-![人協働_状態遷移図_対応範囲](https://github.com/user-attachments/assets/c8d1a298-ac04-44b8-b98d-9bf613865ff5)
+![人協働_状態遷移図_対応応範囲](https://github.com/user-attachments/assets/54859ccc-d1d9-4602-81a3-fd5aa19ef5f4)
 
 # パッケージ概要
 各パッケージの機能以下の通りである
