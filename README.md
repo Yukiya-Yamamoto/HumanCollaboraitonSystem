@@ -92,7 +92,7 @@ $ rosrun human_collaboration HumanCollaborationModule.py
 本システムはエラー発生を含まない正常系の動作を実装したものになっている．一方，仕様書はエラーなどの異常系についても定義されているため，仕様書と本パッケージの対応関係について示す．
 仕様書と本パッケージの対応関係は，以下のアクティビティ図とステートマシン図のうち、赤枠で囲われた部分になっている．
 
-![人協働_アクティビティ図_適応範囲](https://github.com/user-attachments/assets/af25dda5-7102-46a4-9695-d40cc98d0c3a)
+![人協働_アクティビティ図_適応範囲](https://github.com/user-attachments/assets/0f545331-409f-43f6-9eca-a249f37fe7b3)
 ![人協働_状態遷移図_対応応範囲](https://github.com/user-attachments/assets/54859ccc-d1d9-4602-81a3-fd5aa19ef5f4)
 
 # パッケージ概要
