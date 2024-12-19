@@ -129,7 +129,7 @@ $ rosrun human_collaboration HumanCollaborationModule.py
 
 ｢ワーク検出サブシステム｣には，ワークの認識に必要となる情報が事前に登録されており，ワークの種類に応じてIDで管理されているものとする．
 
-※仕様で定義されているオプション機能に関しては未実装
+※仕様で定義されているオプション機能に関しては未実装となっている
 
 ## discharge_position_detect（排出位置検出サブシステム）
 pickしたワークをplaceする場所を検出するサブシステム．
