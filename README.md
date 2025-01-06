@@ -85,15 +85,15 @@ $ rosrun human_collaboration HumanCollaborationModule.py
 ![システム間のやりとり](https://github.com/Yukiya-Yamamoto/Human_Collaboration_Manipulation_System/assets/118329378/f7af74ba-4859-4642-815d-e2dd9168e4c4)
 
 本システム構成は以下の通りである
-![システム構成図](https://github.com/user-attachments/assets/c3d306f9-9727-4a5f-95e3-a2e6d1f7ddba)
+![システム構成図](https://github.com/user-attachments/assets/d4673f29-c0f0-4082-9ca6-2218e1e02ee2)
 
 
 # 仕様書との対応部分について
 本システムはエラー発生を含まない正常系の動作を実装したものになっている．一方，仕様書はエラーなどの異常系についても定義されているため，仕様書と本パッケージの対応関係について示す．
 仕様書と本パッケージの対応関係は，以下のアクティビティ図とステートマシン図のうち、赤枠で囲われた部分になっている．
 
-![人協働_アクティビティ図_適応範囲](https://github.com/user-attachments/assets/af25dda5-7102-46a4-9695-d40cc98d0c3a)
-![人協働_状態遷移図_対応応範囲](https://github.com/user-attachments/assets/54859ccc-d1d9-4602-81a3-fd5aa19ef5f4)
+![人協働_アクティビティ図_適応範囲](https://github.com/user-attachments/assets/0f545331-409f-43f6-9eca-a249f37fe7b3)
+![人協働_状態遷移図_対応範囲](https://github.com/user-attachments/assets/033a65cd-6c58-4e01-a1c0-ce1138c533b7)
 
 # パッケージ概要
 各パッケージの機能以下の通りである．
@@ -129,7 +129,7 @@ $ rosrun human_collaboration HumanCollaborationModule.py
 
 ｢ワーク検出サブシステム｣には，ワークの認識に必要となる情報が事前に登録されており，ワークの種類に応じてIDで管理されているものとする．
 
-※仕様で定義されているオプション機能に関しては未実装
+※仕様で定義されているオプション機能に関しては未実装となっている
 
 ## discharge_position_detect（排出位置検出サブシステム）
 pickしたワークをplaceする場所を検出するサブシステム．
