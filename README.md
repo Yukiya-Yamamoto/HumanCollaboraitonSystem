@@ -146,6 +146,8 @@ pickしたワークをplaceする場所を検出するサブシステム．
 
 ※オプション機能となっているため、現在は未実装となっている
 ## 貢献者
+Kenichi Ohara ([kenichi-ohara](https://github.com/rsdlab))
+
 Yukiya Yamamoto ([Yukiya-Yamamoto](https://github.com/Yukiya-Yamamoto))
 
 Itsuku Kito ([Itsuku-Kito](https://github.com/Itsuku-Kito))
