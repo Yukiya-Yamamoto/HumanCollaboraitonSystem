@@ -1,2 +1,2 @@
-int32 succeeded
-int32 fail
+uint16 succeeded
+uint16 fail

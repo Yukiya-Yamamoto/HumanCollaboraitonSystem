@@ -1,1 +1,1 @@
-int32 state
+uint16 state

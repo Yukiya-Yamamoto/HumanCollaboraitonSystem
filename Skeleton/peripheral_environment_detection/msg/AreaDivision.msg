@@ -1,2 +1,2 @@
-int32 cooperative_work_range
-int32 non_cooperative_work_range
+uint16 cooperative_work_range
+uint16 non_cooperative_work_range

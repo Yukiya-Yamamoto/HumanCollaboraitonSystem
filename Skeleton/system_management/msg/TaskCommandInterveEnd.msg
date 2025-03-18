@@ -1,1 +1,1 @@
-int32 operation_step_id
+uint16 operation_step_id

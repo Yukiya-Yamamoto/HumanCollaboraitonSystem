@@ -336,7 +336,7 @@ class DischargePositionClient(HumanCollaborationClient):
         discharge_position.end_point.x = ex
         discharge_position.end_point.y = ey
         discharge_position.end_point.z = ez
-        self.req_discharge_position = discharge_position
+        self.req_discharge_position = [discharge_position]
 
     def execute(self, object):
         try:

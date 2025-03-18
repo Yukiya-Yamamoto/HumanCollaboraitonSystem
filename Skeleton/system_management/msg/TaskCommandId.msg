@@ -1,1 +1,1 @@
-int32 task_command_id
+uint16 task_command_id
