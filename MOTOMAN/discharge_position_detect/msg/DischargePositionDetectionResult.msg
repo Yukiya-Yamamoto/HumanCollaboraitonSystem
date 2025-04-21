@@ -1,0 +1,3 @@
+uint16 task_command_id
+
+##排出位置候補未実装

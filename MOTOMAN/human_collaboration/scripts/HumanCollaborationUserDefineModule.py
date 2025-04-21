@@ -7,7 +7,6 @@ from std_msgs.msg import String
 from HumanCollaborationStateHeader import *
 from TransitionModule import Transition
 from HumanCollaborationToolModule import HumanCollaborationTool
-from HumanCollaborationStateHeader import *
 from HumanCollaborationCommunicationModule import *
 from geometry_msgs.msg import TransformStamped
 from MovePlannerModule import MovePlanner
@@ -788,7 +787,6 @@ class NON_OPERATING_WORK(HumanCollaborationState):
     def __init__(self, label, taskfin:TaskFinalServer, tran:Transition, outcomes):
         super().__init__(label, tran, outcomes)
         self.taskfin = taskfin
-        self.planner = ShareMovePlanner.get_move_planner()
 
     def execute(self, userdata):
         HumanCollaborationCurrentData.SetCurrentState(self)
@@ -865,14 +863,13 @@ class NON_OPERATING_WORK(HumanCollaborationState):
         return None
 
 ###########################################
-#一時停止中処理クラス.                     #
+#待機中処理クラス.                        #
 ###########################################
 class PAUSED_WORK(HumanCollaborationState):
     def __init__(self, label, taskfin:TaskFinalServer, tran:Transition, outcomes):
         super().__init__(label, tran, outcomes)
         self.taskfin = taskfin
         self.counter = 0
-        self.planner = ShareMovePlanner.get_move_planner()
 
     def execute(self, userdata):
         HumanCollaborationCurrentData.SetCurrentState(self)
@@ -886,7 +883,7 @@ class PAUSED_WORK(HumanCollaborationState):
         if self.preempt('State Prepar is being preempted!!!'):
             return 'preempted'
         
-        #一時停止処理.
+        #待機処理.
         return self.paused()
 
     def paused(self):

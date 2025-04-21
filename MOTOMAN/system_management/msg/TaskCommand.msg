@@ -1,5 +1,5 @@
-int32 task_command_id
-int32 work_type_id
-int32 number_of_items_picked
-WorkPresenceArea work_presence_area
+uint16 task_command_id
+uint16 work_type_id
+uint16 number_of_items_picked
+human_collaboration/TargetArea work_presence_area
 CandidateDischargeLocationAreaList candidate_discharge_location

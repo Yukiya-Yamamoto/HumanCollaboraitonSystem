@@ -17,10 +17,17 @@
 from abc import ABCMeta
 from abc import abstractmethod
 import rospy
+from human_collaboration.msg import TargetArea
 from system_management.msg import *
 from system_management.srv import *
 from std_msgs.msg import Empty
 import sys
+import os
+
+# 相対パスでhuman_collaboration/scriptsのパスを追加
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../human_collaboration/scripts'))
+# インポート
+from EnumerateModule import EnumCommandReceiveState
 
 class SystemManagementBase(metaclass=ABCMeta):
     """
@@ -52,13 +59,69 @@ class SystemManagementClient(SystemManagementBase):
             rospy.loginfo("ServiceException : %s" % e)
             return False
 
+class SystemManagementServer(SystemManagementBase):
+    def __init__(self, service_name, service_class, callback_impl):
+        self.server = rospy.Service(service_name, service_class, callback_impl)
+
+    def service_delete(self, msg=''):
+        self.server.shutdown(msg)
+
+    def execute(self, object):
+        pass
+
+#作業結果コマンド受信クラス.
+class TaskResultServer(SystemManagementServer):
+    def __init__(self):
+        super().__init__('share_task_result', ShareTaskResult, self.recv_task_result)
+        self.task_failed = 0
+
+    def service_delete(self):
+        super().service_delete('share_task_result deleted')
+
+    #作業結果コマンド受信.
+    def recv_task_result(self, data):
+        print("TaskResult:", data.task_result.task_result)
+        if(False == data.task_result.task_result):
+            self.task_failed = 1
+
+        return Empty()
+    
+    def get_task_failed(self):
+        return self.task_failed
+    
+    def reset_task_result(self):
+        self.task_failed = 0
+
+#作業完了コマンド受信クラス.
+class TaskCompleteServer(SystemManagementServer):
+    def __init__(self):
+        super().__init__('share_task_complete', ShareTaskComplete, self.recv_task_complete)
+        self.task_complete = 0
+
+    def service_delete(self):
+        super().service_delete('share_task_complete deleted')
+
+    #作業完了コマンド受信.
+    def recv_task_complete(self, data):
+        print("TaskComplete")
+        self.task_complete = 1
+        return Empty()
+    
+    def get_task_complete(self):
+        return self.task_complete
+    
+    def reset_task_complete(self):
+        self.task_complete = 0
+
 #システム終了指令.
-class SystemManagementHalt(SystemManagementPublisher):
+class SystemManagementHaltPublisher(SystemManagementPublisher):
     def __init__(self,):
-        super().__init__('sys_manage_halt', Empty)
+        super().__init__('sys_manage_halt', SystemManagementHalt)
 
     def execute(self):
-        super().execute(Empty())
+        msg = SystemManagementHalt()
+        msg.empty = Empty()
+        super().execute(msg)
 
 #作業開始指令.
 class SystemManagementTaskCommand(SystemManagementClient):
@@ -78,7 +141,7 @@ class SystemManagementTaskCommand(SystemManagementClient):
         set_task_command.number_of_items_picked = 1
         
         #ワーク検知エリア設定.
-        set_task_command.work_presence_area = WorkPresenceArea()
+        set_task_command.work_presence_area = TargetArea()
         set_task_command.work_presence_area.start_point.x = -2.0
         set_task_command.work_presence_area.start_point.y = -2.0
         set_task_command.work_presence_area.start_point.z = 0.0
@@ -90,7 +153,7 @@ class SystemManagementTaskCommand(SystemManagementClient):
         set_task_command.candidate_discharge_location = CandidateDischargeLocationAreaList()
 
         #廃棄候補エリア作成.
-        dis_area = CandidateDischargeLocationArea()
+        dis_area = TargetArea()
         dis_area.start_point.x = -2.0
         dis_area.start_point.y = -2.0
         dis_area.start_point.z = 0.0
@@ -106,13 +169,35 @@ class SystemManagementTaskCommand(SystemManagementClient):
         srv = SystemManagementRequest()
         srv.task_info_list = set_task_command_list
         ret = super().execute(srv)
-        print('reslt ', ret.task_result_list.task_result)
+        print('reslt ', ret.command_receive_result)
+        return ret.command_receive_result
+
+def wait(result:TaskResultServer, comp:TaskCompleteServer):
+    while ((False == result.get_task_failed()) and (False == comp.get_task_complete()) and (not rospy.is_shutdown())):
+        rospy.sleep(0.05)
+    return
 
 def main(cmd:SystemManagementBase):
-    print(cmd)
     if cmd is not None:
         rospy.init_node("system_management_node")
-        cmd.execute()
+        result = TaskResultServer()
+        complete = TaskCompleteServer()
+        rospy.sleep(0.1)
+        if type(cmd) == SystemManagementTaskCommand:
+            #送信完了まで繰り返す.
+            result.reset_task_result()
+            complete.reset_task_complete()
+            #送信完了まで繰り返す.
+            while (EnumCommandReceiveState.e_received() != cmd.execute()):
+                print("command_retry")
+                rospy.sleep(1)
+
+            #動作完了まで待つ.
+            wait(result, complete)
+            if(True == result.get_task_failed()):
+                return Empty()
+        else:
+            cmd.execute()
     else:
         print('error ! not selected')
 
@@ -127,7 +212,7 @@ if __name__ == '__main__':
             cmd = SystemManagementTaskCommand()
         #システム終了指令.
         elif 'halt' == args[1]:
-            cmd = SystemManagementHalt()
+            cmd = SystemManagementHaltPublisher()
     try:
         main(cmd)
     except rospy.ROSInterruptException:

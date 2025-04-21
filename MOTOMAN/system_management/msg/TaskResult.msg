@@ -1,3 +1,3 @@
-int32 task_command_id
-int32 number_of_items_picked
+uint16 task_command_id
+uint16 number_of_items_picked
 bool task_result

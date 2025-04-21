@@ -24,11 +24,11 @@ from peripheral_environment_detection.srv import *
 
 class AreaIntrusionDetect:
     def __init__(self):
-        self.result_pub = Publisher('/intrusion_result', PerEnvDetectResult, queue_size=10)
+        self.result_pub = Publisher('/intrusion_result', int, queue_size=10)
         self.length_sub = Subscriber('/len_topic', Float32, self.UrgCallback)
         self.setup_req = rospy.Service('per_env_det_service', MonitoringAreaSetup, self.setup_request)
         self.setup_data = AreaSetupList()
-        self.result_data = PerEnvDetectResult()
+        self.result_data = 0
         self.urg_data = Float32()
         self.basis_length = 0.3 #[m]
 
@@ -39,15 +39,13 @@ class AreaIntrusionDetect:
         self.setup_data = req_.setup_info_list
         if self.setup_data.area_setup_info:
             print("Setup succeeded")
-            srv.setup_result.succeeded = 1
-            srv.setup_result.fail = 0
+            srv.setup_result = 1
             print("Setup Data")
             print(self.setup_data)
             print("AreaIntrusionDetection start!")
         else:
             print("Setup fail")
-            srv.setup_result.succeeded = 0
-            srv.setup_result.fail = 1
+            srv.setup_result= 0
         return srv
 
     def UrgCallback(self, urg_):
@@ -57,15 +55,8 @@ class AreaIntrusionDetect:
         r = rospy.Rate(10)
         while not rospy.is_shutdown():
             if self.setup_data.area_setup_info:
-                self.result_data.area_division.cooperative_work_range = self.setup_data.area_setup_info[0].area_division.cooperative_work_range
-                self.result_data.area_division.non_cooperative_work_range = self.setup_data.area_setup_info[0].area_division.non_cooperative_work_range
-
-                if (self.basis_length * self.setup_data.area_setup_info[0].area_division.non_cooperative_work_range > self.urg_data):
-                    self.result_data.intrusion = True
-                else:
-                    self.result_data.intrusion = False
-
                 self.result_pub.publish(self.result_data)
+                self.setup_data = AreaSetupList()
                 #TODO サブスクライバー作成.
 
             r.sleep()

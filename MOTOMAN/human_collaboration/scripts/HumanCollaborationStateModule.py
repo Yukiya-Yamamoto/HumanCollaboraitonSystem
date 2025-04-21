@@ -132,12 +132,14 @@ class MonitorState(smach_ros.MonitorState):
 class RESULT_RECEIVE(HumanCollaborationState):
     def __init__(self,
                  label,
-                 taskcmd:TaskCommandServer,
+                 taskresult:ShareTaskResultClient,
+                 taskcomp:ShareTaskCompleteClient,
                  taskspd:TaskSuspendServer,
                  taskfin:TaskFinalServer,
                  tran:Transition):
         super().__init__(label, tran, ['succeeded','aborted'])
-        self.taskcmd = taskcmd
+        self.taskresult = taskresult
+        self.taskcomp = taskcomp
         self.taskspd = taskspd
         self.taskfin = taskfin
 
@@ -157,7 +159,8 @@ class RESULT_RECEIVE(HumanCollaborationState):
         task_command_list = HumanCollaborationCurrentData.GetCurrentCommandList()
         task_command = task_command_list.get(0)
         if self.tran.get_event().is_workstart():
-            self.taskcmd.execute(task_command, task_command.task_command_id, task_command.number_of_items_picked , True)
+            self.taskresult.execute(task_command, task_command.task_command_id, task_command.number_of_items_picked , True)
+            self.taskcomp.execute(task_command)
         elif self.tran.get_event().is_worksuspend():
             self.taskspd.execute(task_command)
         elif self.tran.get_event().is_workend():
@@ -176,7 +179,8 @@ class HumanCollaborationStateMachine(HumanCollaborationEventSubscriver):
         state machine class
     """
     def __init__(self, 
-            taskcmd:TaskCommandServer,
+            taskresult:ShareTaskResultClient,
+            taskcomp:ShareTaskCompleteClient,
             tasksuspend:TaskSuspendServer,
             taskfinal:TaskFinalServer,
             taskgetstate:TaskGetStateServer,
@@ -185,7 +189,8 @@ class HumanCollaborationStateMachine(HumanCollaborationEventSubscriver):
             workd:WorkDetectionClient,
             workstartevt:HumanCollaborationEventSubscriverWorkStart
             ):
-        self.taskcmd        = taskcmd
+        self.taskresult     = taskresult
+        self.taskcomp       = taskcomp
         self.tasksuspend    = tasksuspend
         self.taskfinal      = taskfinal
         self.taskgetstate   = taskgetstate
@@ -277,7 +282,7 @@ class HumanCollaborationStateMachine(HumanCollaborationEventSubscriver):
 
         #作業結果の送信
             Working.add('RESULT RECEIVE', 
-                RESULT_RECEIVE('RESULT RECEIVE', self.taskcmd, self.tasksuspend, self.taskfinal, WorkingTran()), 
+                RESULT_RECEIVE('RESULT RECEIVE', self.taskresult, self.taskcomp, self.tasksuspend, self.taskfinal, WorkingTran()), 
                 transitions={'succeeded':'succeeded','aborted':'aborted'})
 
         # 一時停止中
@@ -390,7 +395,7 @@ class HumanCollaborationStateMachine(HumanCollaborationEventSubscriver):
                             outcome_cb=out_manip_cb)
         with concur:
             concur.add('Running', Running)
-            concur.add('HUMAN DETECT', MonitorState('HUMAN DETECT', self.taskfinal, RunningTran(),'/intrusion_result', PerEnvDetectResult, humandetect_cb,))
+            concur.add('HUMAN DETECT', MonitorState('HUMAN DETECT', self.taskfinal, RunningTran(),'/intrusion_result', int, humandetect_cb,))
 
 ##################################################################
 #　　　　　　　　　　　 メイン処理内容                           #

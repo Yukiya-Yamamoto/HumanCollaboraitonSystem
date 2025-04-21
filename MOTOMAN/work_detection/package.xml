@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>work_detection</name>
-  <version>1.0.0</version>
+  <version>0.0.0</version>
   <description>The work_detection package</description>
   <maintainer email="yamamoto@rsdlab.jp">Yukiya Yamamto</maintainer>
   <author email="yamamoto@rsdlab.jp">Yukiya Yamamto</author>
@@ -13,6 +13,7 @@
   <depend>std_msgs</depend>
 
   <build_depend>message_generation</build_depend>
+  <build_depend>human_collaboration</build_depend>
   <exec_depend>message_runtime</exec_depend>
 
 </package>

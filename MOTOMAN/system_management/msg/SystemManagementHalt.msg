@@ -1,3 +1,1 @@
 std_msgs/Empty empty
----
-int16 res
