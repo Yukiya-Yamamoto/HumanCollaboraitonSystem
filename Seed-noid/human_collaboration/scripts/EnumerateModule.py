@@ -156,4 +156,21 @@ class EnumState(BaseState):
     def is_paused(self):
         return self.PAUSED & self.state == self.PAUSED 
     def is_finalizing(self):
-        return self.FINALIZING & self.state == self.FINALIZING 
+        return self.FINALIZING & self.state == self.FINALIZING
+
+class EnumCommandReceiveState(BaseEvent):
+    RECEIVED    = auto()
+    BUSY        = auto()
+    FATAL_ERROR = auto()
+
+    def __init__(self, event):
+        super().__init__(event)
+    @classmethod
+    def e_received(cls):
+        return cls.RECEIVED
+    @classmethod
+    def e_busy(cls):
+        return cls.BUSY
+    @classmethod
+    def e_fatal_error(cls):
+        return cls.FATAL_ERROR

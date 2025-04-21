@@ -3,6 +3,7 @@
 from abc import ABCMeta
 from abc import abstractmethod
 from EnumerateModule import EnumEvent
+from human_collaboration.msg import TargetArea
 from system_management.msg import *
 from system_management.srv import * 
 import queue
@@ -29,7 +30,7 @@ class HumanCollaborationEventPublisher:
         cls.lock.release()
 
 #排出位置候補クラス.
-class HumanCollaborationCandidateDischargeLocationArea(CandidateDischargeLocationArea):
+class HumanCollaborationCandidateDischargeLocationArea(TargetArea):
     def __init__(self):
         super().__init__()
 
@@ -49,7 +50,7 @@ class HumanCollaborationCandidateDischargeLocationAreaList(CandidateDischargeLoc
         self.candidate_discharge_location_area_list.append(area)
 
 #ワーク検出エリア.
-class HumanCollaborationWorkPresenceArea(WorkPresenceArea):
+class HumanCollaborationWorkPresenceArea(TargetArea):
     def __init__(self):
         super().__init__()
 

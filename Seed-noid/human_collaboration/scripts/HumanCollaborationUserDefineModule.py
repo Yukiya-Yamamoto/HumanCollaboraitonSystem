@@ -7,7 +7,6 @@ from std_msgs.msg import String
 from HumanCollaborationStateHeader import *
 from TransitionModule import Transition
 from HumanCollaborationToolModule import HumanCollaborationTool
-from HumanCollaborationStateHeader import *
 from HumanCollaborationCommunicationModule import *
 from geometry_msgs.msg import TransformStamped
 from MovePlannerModule import MovePlanner

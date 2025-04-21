@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_runtime
   rospy
   std_msgs
+  human_collaboration
 )
 
 ## System dependencies are found with CMake's conventions
@@ -51,12 +52,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  TargetArea.msg
-  AreaDivision.msg
   AreaSetup.msg
   AreaSetupList.msg
-  PerEnvDetectResult.msg
-  SetupResult.msg
 )
 
 
@@ -78,6 +75,7 @@ generate_messages(
   DEPENDENCIES
   std_msgs
   geometry_msgs
+  human_collaboration
 )
 
 ################################################
