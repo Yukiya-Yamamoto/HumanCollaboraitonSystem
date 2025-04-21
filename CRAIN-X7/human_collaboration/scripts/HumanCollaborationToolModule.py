@@ -33,3 +33,6 @@ class HumanCollaborationTool:
     @classmethod
     def is_shutdown(cls):
         return rospy.is_shutdown()
+    @classmethod
+    def ServiceException(cls):
+        return rospy.exceptions()

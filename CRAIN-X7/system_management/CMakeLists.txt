@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   geometry_msgs
+  human_collaboration
 )
 
 ## System dependencies are found with CMake's conventions
@@ -53,20 +54,12 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  WorkPresenceArea.msg
-  CandidateDischargeLocationArea.msg
   CandidateDischargeLocationAreaList.msg
   TaskResult.msg
-  TaskResultInterve.msg
   TaskCommand.msg
   TaskCommandList.msg
-  TaskCommandId.msg
-  TaskCommandFinal.msg
-  TaskCommandInterve.msg
-  TaskCommandInterveEnd.msg
-  TaskCommandInterveEndList.msg
-  TaskCommandReqState.msg
   TaskCommandResState.msg
+  SystemManagementHalt.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -78,7 +71,8 @@ add_service_files(
   SystemManagementInterveEnd.srv
   SystemManagementState.srv
   SystemManagementSuspend.srv
-  MoveCommunication.srv
+  ShareTaskResult.srv
+  ShareTaskComplete.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -94,6 +88,7 @@ generate_messages(
   actionlib_msgs
   std_msgs
   geometry_msgs
+  human_collaboration
 )
 
 ################################################

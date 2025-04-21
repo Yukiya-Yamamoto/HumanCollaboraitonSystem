@@ -1,5 +1,5 @@
 uint16 task_command_id
 uint16 work_type_id
-TargetArea target_area
+human_collaboration/TargetArea target_area
 ---
 WorkDetectionResultList work_detection_result_list

@@ -19,7 +19,7 @@
 #===================================================================================================================#
 
 from HumanCollaborationStateModule import HumanCollaborationStateMachine
-from HumanCollaborationCommunicationModule import TaskCommandServer, TaskSuspendServer, TaskFinalServer, TaskGetStateServer, HumanCollaborationSubscriverThread, PeripheralEnvironmentAreaSetClient, DischargePositionClient, WorkDetectionClient
+from HumanCollaborationCommunicationModule import TaskCommandServer, TaskSuspendServer, TaskFinalServer, TaskGetStateServer, HumanCollaborationSubscriverThread, PeripheralEnvironmentAreaSetClient, DischargePositionClient, WorkDetectionClient, ShareTaskResultClient, ShareTaskCompleteClient
 from HumanCollaborationEventModule import HumanCollaborationEventPublisher, HumanCollaborationEventSubscriverWorkStart
 from HumanCollaborationToolModule import HumanCollaborationTool
 
@@ -34,8 +34,10 @@ class HumanCollaboration:
         disc = DischargePositionClient()
         workd = WorkDetectionClient()
         workstart_event = HumanCollaborationEventSubscriverWorkStart()
+        TaskCommandServer()
         self.statemachine = HumanCollaborationStateMachine(
-              TaskCommandServer(),
+              ShareTaskResultClient(),
+              ShareTaskCompleteClient(),
               TaskSuspendServer(),
               TaskFinalServer(),
               TaskGetStateServer(),
