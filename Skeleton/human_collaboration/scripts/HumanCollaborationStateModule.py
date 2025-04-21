@@ -133,12 +133,14 @@ class MonitorState(smach_ros.MonitorState):
 class RESULT_RECEIVE(HumanCollaborationState):
     def __init__(self,
                  label,
-                 taskcmd:TaskCommandServer,
+                 taskresult:ShareTaskResultClient,
+                 taskcomp:ShareTaskCompleteClient,
                  taskspd:TaskSuspendServer,
                  taskfin:TaskFinalServer,
                  tran:Transition):
         super().__init__(label, tran, ['succeeded','aborted'])
-        self.taskcmd = taskcmd
+        self.taskresult = taskresult
+        self.taskcomp = taskcomp
         self.taskspd = taskspd
         self.taskfin = taskfin
 
@@ -157,8 +159,10 @@ class RESULT_RECEIVE(HumanCollaborationState):
         #現在のコマンドリストを取得.
         task_command_list = HumanCollaborationCurrentData.GetCurrentCommandList()
         task_command = task_command_list.get(0)
+        #作業結果に応じた処理.
         if self.tran.get_event().is_workstart():
-            self.taskcmd.execute(task_command, task_command.task_command_id, task_command.number_of_items_picked , True)
+            self.taskresult.execute(task_command, task_command.task_command_id, task_command.number_of_items_picked , True)
+            self.taskcomp.execute(task_command)
         elif self.tran.get_event().is_worksuspend():
             self.taskspd.execute(task_command)
         elif self.tran.get_event().is_workend():
@@ -391,7 +395,7 @@ class HumanCollaborationStateMachine(HumanCollaborationEventSubscriver):
                             outcome_cb=out_manip_cb)
         with concur:
             concur.add('Running', Running)
-            concur.add('HUMAN DETECT', MonitorState('HUMAN DETECT', self.taskfinal, RunningTran(),'/intrusion_result', PerEnvDetectResult, humandetect_cb,))
+            concur.add('HUMAN DETECT', MonitorState('HUMAN DETECT', self.taskfinal, RunningTran(),'/intrusion_result', int, humandetect_cb,))
 
 ##################################################################
 #　　　　　　　　　　　 メイン処理内容                           #

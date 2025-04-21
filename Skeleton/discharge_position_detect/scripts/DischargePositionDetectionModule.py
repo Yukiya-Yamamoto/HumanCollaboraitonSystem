@@ -21,7 +21,7 @@ from discharge_position_detect.srv import *
 
 def response_data(req):
     print(req)
-    srv = DischargePositionDetectionResultResponse()
+    srv = DetectDischargePositionResponse()
 
     #リストを受信する.
 
@@ -32,7 +32,7 @@ def response_data(req):
 
 def dis_pos_detect_server():
     rospy.init_node('discharge_position_detect_server')
-    rospy.Service('discharge_position_detect_server', DischargePositionDetectionResult, response_data)
+    rospy.Service('discharge_position_detect_server', DetectDischargePosition, response_data)
     rospy.spin()
 
 if __name__ == "__main__":

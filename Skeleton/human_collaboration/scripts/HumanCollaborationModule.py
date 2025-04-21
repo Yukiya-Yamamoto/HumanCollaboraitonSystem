@@ -19,7 +19,7 @@
 #===================================================================================================================#
 
 from HumanCollaborationStateModule import HumanCollaborationStateMachine
-from HumanCollaborationCommunicationModule import TaskCommandServer, TaskSuspendServer, TaskFinalServer, TaskGetStateServer, HumanCollaborationSubscriverThread, PeripheralEnvironmentAreaSetClient, DischargePositionClient, WorkDetectionClient
+from HumanCollaborationCommunicationModule import TaskCommandServer, TaskSuspendServer, TaskFinalServer, TaskGetStateServer, HumanCollaborationSubscriverThread, PeripheralEnvironmentAreaSetClient, DischargePositionClient, WorkDetectionClient, ShareTaskResultClient, ShareTaskCompleteClient
 from HumanCollaborationEventModule import HumanCollaborationEventPublisher, HumanCollaborationEventSubscriverWorkStart
 from HumanCollaborationToolModule import HumanCollaborationTool
 
@@ -28,14 +28,16 @@ from HumanCollaborationToolModule import HumanCollaborationTool
 ##################################################################
 class HumanCollaboration:
     def __init__(self):
-        HumanCollaborationTool.init_node('human_collaboration_node')
+        HumanCollaborationTool.init_node('human_collaboration_node_forward')
         self.subscthread = HumanCollaborationSubscriverThread()
         area = PeripheralEnvironmentAreaSetClient()
         disc = DischargePositionClient()
         workd = WorkDetectionClient()
         workstart_event = HumanCollaborationEventSubscriverWorkStart()
+        TaskCommandServer()
         self.statemachine = HumanCollaborationStateMachine(
-              TaskCommandServer(),
+              ShareTaskResultClient(),
+              ShareTaskCompleteClient(),
               TaskSuspendServer(),
               TaskFinalServer(),
               TaskGetStateServer(),

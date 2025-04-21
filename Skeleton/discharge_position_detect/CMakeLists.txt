@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_runtime
   rospy
   std_msgs
+  human_collaboration
 )
 
 
@@ -52,13 +53,13 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   DischargeArea.msg
+   DischargePositionDetectionResult.msg
  )
 
 ## Generate services in the 'srv' folder
  add_service_files(
    FILES
-   DischargePositionDetectionResult.srv
+   DetectDischargePosition.srv
 #   Service1.srv
 #   Service2.srv
  )
@@ -75,6 +76,7 @@ generate_messages(
   DEPENDENCIES
   std_msgs
   geometry_msgs
+  human_collaboration
 )
 
 ################################################

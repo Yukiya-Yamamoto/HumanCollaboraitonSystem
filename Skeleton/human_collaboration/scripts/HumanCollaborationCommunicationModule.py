@@ -4,13 +4,13 @@
 from abc import ABCMeta
 from abc import abstractmethod
 import rospy, tf2_ros
+from human_collaboration.msg import TargetArea
 from peripheral_environment_detection.msg import *
 from peripheral_environment_detection.srv import *
 from work_detection.msg import *
 from work_detection.srv import *
 from system_management.msg import *
 from system_management.srv import * 
-from discharge_position_detect.msg import *
 from discharge_position_detect.srv import *
 from HumanCollaborationEventModule import HumanCollaborationEventPublisher, HumanCollaborationTaskCommand, HumanCollaborationWorkPresenceArea
 from HumanCollaborationEventModule import HumanCollaborationCandidateDischargeLocationAreaList, HumanCollaborationCandidateDischargeLocationArea, HumanCollaborationTaskCommandList
@@ -19,6 +19,8 @@ from EnumerateModule import EnumEvent
 from std_msgs.msg import Empty, Bool
 from geometry_msgs.msg import Point
 import threading
+from EnumerateModule import EnumState, EnumCommandReceiveState
+
 
 #協働通信クラスの抽象クラス.
 class HumanCollaborationCommunication(metaclass=ABCMeta):
@@ -91,7 +93,7 @@ class HumanCollaborationServer(HumanCollaborationCommunication):
 #システム終了コマンド受信クラス.
 class SystemHalt(HumanCollaborationSubscriver):
     def __init__(self):
-        super().__init__("sys_manage_halt", Empty, self.receive_system_halt)
+        super().__init__('sys_manage_halt', SystemManagementHalt, self.receive_system_halt)
         HumanCollaborationTool.loginfo('{} start '.format(self.__class__.__name__))
 
     #システム終了コマンド受信.
@@ -102,20 +104,20 @@ class SystemHalt(HumanCollaborationSubscriver):
     def execute(self, object):
         pass
 
-#システム中断コマンド受信クラス.
+#システム一時停止コマンド受信クラス.
 class SystemPause(HumanCollaborationSubscriver):
     def __init__(self):
         super().__init__("sys_manage_pause", Bool, self.receive_system_pause)
         HumanCollaborationTool.loginfo('{} start '.format(self.__class__.__name__))
     
-    #システム中断コマンド受信.
+    #システム一時停止コマンド受信.
     def receive_system_pause(self, data):
         if data.data:
             HumanCollaborationTool.loginfo('receive_system_pause {}'.format(data))
-            HumanCollaborationEventPublisher.notify(EnumEvent(EnumEvent.e_pause()), data.data)
+            HumanCollaborationEventPublisher.notify(EnumEvent(EnumEvent.e_pause()), data)
         else:
             HumanCollaborationTool.loginfo('receive_system_pause {}'.format(data))
-            HumanCollaborationEventPublisher.notify(EnumEvent(EnumEvent.e_pausecancel()), data.data)
+            HumanCollaborationEventPublisher.notify(EnumEvent(EnumEvent.e_pausecancel()), data)
 
     def execute(self, object):
         pass
@@ -130,10 +132,10 @@ class SystemCollabo(HumanCollaborationSubscriver):
     def receive_system_collabo(self, data):
         if data.data:
             HumanCollaborationTool.loginfo('receive_system_collabo {}'.format(data))
-            HumanCollaborationEventPublisher.notify(EnumEvent(EnumEvent.e_collabo()), data.data)
+            HumanCollaborationEventPublisher.notify(EnumEvent(EnumEvent.e_collabo()), data)
         else:
             HumanCollaborationTool.loginfo('receive_system_collabo_end {}'.format(data))
-            HumanCollaborationEventPublisher.notify(EnumEvent(EnumEvent.e_collaboend()), data.data)
+            HumanCollaborationEventPublisher.notify(EnumEvent(EnumEvent.e_collaboend()), data)
 
     def execute(self, object):
         pass
@@ -162,6 +164,13 @@ class TaskCommandServer(HumanCollaborationServer):
     #作業開始コマンド受信.
     def recv_task_command(self, data):
         HumanCollaborationTool.loginfo("TaskCommandServer::recv_task_command")
+        
+        #待機中以外で受信した場合はBUSYを返却する.
+        from HumanCollaborationStateHeader import HumanCollaborationCurrentData
+        state = HumanCollaborationCurrentData.GetCurrentState()
+        if( EnumState.e_standby() != state.get_state()):
+            print(state.get_state())
+            return EnumCommandReceiveState.e_busy()
 
         #受信データ変換処理.
         command_list = HumanCollaborationTaskCommandList()
@@ -193,14 +202,8 @@ class TaskCommandServer(HumanCollaborationServer):
 
         #受信内容をオブザーバ経由で通知する.
         HumanCollaborationEventPublisher.notify(EnumEvent(EnumEvent.e_workstart()), command_list)
-        self.wait(0.1, self.is_rsp is False)
-        self.is_rsp = False
-        res = TaskResult()
-        res.task_command_id = self.task_command_id
-        res.number_of_items_picked = self.number_of_items_picked
-        res.task_result = self.task_result
-        self.rsp = res
-        return self.rsp
+        
+        return EnumCommandReceiveState.e_received()
 
     #作業完了時に返信オブジェクトを記憶し、処理完了とする.
     def execute(self, object, task_command_id, number_of_items_picked, task_result):
@@ -212,7 +215,7 @@ class TaskCommandServer(HumanCollaborationServer):
         self.set_wait_condition(self.is_rsp is False)
         return True
 
-#一時停止コマンド受信クラス.
+#作業中断受信クラス.
 class TaskSuspendServer(HumanCollaborationServer):
     def __init__(self):
         super().__init__('sys_manage_service_suspend', SystemManagementSuspend, self.recv_task_suspend)
@@ -223,7 +226,7 @@ class TaskSuspendServer(HumanCollaborationServer):
     def service_delete(self):
         super().service_delete('sys_manage_service_suspend deleted')
 
-    #一時停止コマンド受信.
+    #作業中断コマンド受信.
     def recv_task_suspend(self, data):
         HumanCollaborationEventPublisher.notify(EnumEvent(EnumEvent.e_worksuspend()), data.task_command_id)
         self.task_comand_id = data.task_command_id
@@ -233,10 +236,8 @@ class TaskSuspendServer(HumanCollaborationServer):
 
     def execute(self, object):
         rsp = SystemManagementSuspendResponse()
-        rsp.task_result_list.task_command_id = object.task_command_id
-        rsp.task_result_list.number_of_items_picked = object.number_of_items_picked
-        rsp.task_result_list.task_result = True
-        self.rsp = object
+        rsp.empty = Empty()
+        self.rsp = rsp
         self.is_rsp = True
         self.set_wait_condition(self.is_rsp is False)
         return True
@@ -253,16 +254,14 @@ class TaskFinalServer(HumanCollaborationServer):
 
     #作業終了コマンド.
     def recv_task_final(self, data):
-        HumanCollaborationEventPublisher.notify(EnumEvent(EnumEvent.e_workend()), data.task_command_final)
+        HumanCollaborationEventPublisher.notify(EnumEvent(EnumEvent.e_workend()), data)
         self.wait(0.1, self.is_rsp is False)
         self.is_rsp = False
         return self.rsp
     
     def execute(self, object):
         rsp = SystemManagementFinalResponse()
-        rsp.task_result_list.task_command_id = object.task_command_id
-        rsp.task_result_list.number_of_items_picked = object.number_of_items_picked
-        rsp.task_result_list.task_result = True
+        rsp.empty = Empty()
         self.rsp = rsp
         self.is_rsp = True
         self.set_wait_condition(self.is_rsp is False)
@@ -283,7 +282,7 @@ class TaskGetStateServer(HumanCollaborationServer):
         HumanCollaborationEventPublisher.notify(EnumEvent(EnumEvent.e_getstate()), data.req)
         self.wait(0.1, self.is_rsp is False)
         rsp = SystemManagementStateResponse()
-        rsp.res.state = self.rsp
+        rsp.res = self.rsp
         self.is_rsp = False
         return rsp
     
@@ -292,6 +291,39 @@ class TaskGetStateServer(HumanCollaborationServer):
         self.is_rsp = True
         self.set_wait_condition(self.is_rsp is False)
         return True
+
+#サーバーに作業結果を送信するクラス.
+class ShareTaskResultClient(HumanCollaborationClient):
+    def __init__(self):
+        super().__init__('share_task_result', ShareTaskResult)
+        self.work_detect_result = WorkDetectionResultList()
+
+    def execute(self, object, task_command_id, number_of_items_picked, task_result):
+        res = TaskResult()
+        res.task_command_id = task_command_id
+        res.number_of_items_picked = number_of_items_picked
+        res.task_result = task_result
+        try:
+            self.proxy(res)
+            HumanCollaborationTool.loginfo("Task Result")
+            return True
+        except HumanCollaborationTool.ServiceException as e:
+            HumanCollaborationTool.loginfo("ServiceException : %s" % e)
+            return False
+
+#サーバーに作業完了を送信するクラス.
+class ShareTaskCompleteClient(HumanCollaborationClient):
+    def __init__(self):
+        super().__init__('share_task_complete', ShareTaskComplete)
+
+    def execute(self, object):
+        try:
+            self.proxy(Empty())
+            HumanCollaborationTool.loginfo("Task Complete")
+            return True
+        except HumanCollaborationTool.ServiceException as e:
+            HumanCollaborationTool.loginfo("ServiceException : %s" % e)
+            return False
 
 #サーバーにワーク認識指令を出すクラス.
 class WorkDetectionClient(HumanCollaborationClient):
@@ -325,11 +357,11 @@ class WorkDetectionClient(HumanCollaborationClient):
 #サーバーに排出場所検出指令を出すクラス.
 class DischargePositionClient(HumanCollaborationClient):
     def __init__(self):
-        super().__init__('discharge_position_detect_server', DischargePositionDetectionResult)
+        super().__init__('discharge_position_detect_server', DetectDischargePosition)
         self.taskid = 0
     
     def set_discharge_area(self, sx, sy, sz, ex, ey, ez):
-        discharge_position = DischargeArea()
+        discharge_position = TargetArea()
         discharge_position.start_point.x = sx
         discharge_position.start_point.y = sy
         discharge_position.start_point.z = sz
@@ -342,8 +374,8 @@ class DischargePositionClient(HumanCollaborationClient):
         try:
             result = self.proxy(self.req_discharge_position)
             HumanCollaborationTool.loginfo("Detection Result")
-            HumanCollaborationTool.loginfo(result.task_command_id)
-            self.task_id = result.task_command_id
+            HumanCollaborationTool.loginfo(result.result.task_command_id)
+            self.task_id = result.result.task_command_id
             return True
         except HumanCollaborationTool.ServiceException as e:
             HumanCollaborationTool.loginfo("ServiceException : %s" % e)
@@ -354,9 +386,9 @@ class PeripheralEnvironmentAreaSetClient(HumanCollaborationClient):
     def __init__(self):
         super().__init__('per_env_det_service', MonitoringAreaSetup)
         self.req_list = AreaSetupList()
-        self.area_setup_result = SetupResult()
+        self.area_setup_result = 0
     
-    def set_peripheral_area(self, sx, sy, sz, ex, ey, ez, crange, ncrange):
+    def set_peripheral_area(self, sx, sy, sz, ex, ey, ez, division):
         set_data = AreaSetup()
         set_data.target_area.start_point.x = sx
         set_data.target_area.start_point.y = sy
@@ -364,8 +396,7 @@ class PeripheralEnvironmentAreaSetClient(HumanCollaborationClient):
         set_data.target_area.end_point.x = ex
         set_data.target_area.end_point.y = ey
         set_data.target_area.end_point.z = ez
-        set_data.area_division.cooperative_work_range = crange
-        set_data.area_division.non_cooperative_work_range = ncrange
+        set_data.area_division = division
         self.req_list.area_setup_info.append(set_data)
 
     def execute(self, object):
