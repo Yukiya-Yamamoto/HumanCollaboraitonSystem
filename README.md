@@ -100,7 +100,7 @@ $ rosrun human_collaboration HumanCollaborationModule.py
 
 ## システムモデル
 システム間のデータのやりとりは以下の通りである
-![システム間のやりとり]<img width="425" alt="image" src="https://github.com/user-attachments/assets/69ff73a2-c077-4268-887a-f7ac079de783" />
+![システム間のやりとり](https://github.com/user-attachments/assets/69ff73a2-c077-4268-887a-f7ac079de783)
 
 
 本システム構成は以下の通りである
