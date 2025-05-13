@@ -18,7 +18,7 @@
 | ミドルウェア | ROS noetic |  
 
 # システムのシナリオ
-シナリオとして，工場のラインを想定してデモ動画では，行われている．
+工場のラインを想定してデモシステムを実装した.
 
 以下にハードウェア構成とその外観について載せる．
 ![ハードウェア構成](https://github.com/Yukiya-Yamamoto/Human_Collaboration_Manipulation_System/assets/118329378/a0212d4d-917a-4a6c-8967-68e0160c7d13)
