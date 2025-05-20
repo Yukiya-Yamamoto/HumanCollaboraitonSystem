@@ -74,7 +74,7 @@
 このリポジトリを自身の環境に合わせてクローンする
 ```sh
 $ cd catkin_ws/src
-$ git clone https://github.com/Yukiya-Yamamoto/test_HumanCollaborationSystem
+$ git clone https://github.com/rsdlab/Human_Collaboraiton_System
 ```
 
 ## 各ファイルのビルド
